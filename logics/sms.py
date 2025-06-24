@@ -1,16 +1,16 @@
 import subprocess as tool
-from result import converter
-from Time import convert_time
+from result import convert_sms
+from Time import to_millis
 
 
-def sms_data(address='',s_time='',e_time='',status='') :
+def get_sms(address='',s_time='',e_time='',status='') :
     conditions=[]
     starting_time=None
     ending_time=None
     if s_time!='' :
-       starting_time=convert_time(s_time)
+       starting_time=to_millis(s_time)
     if e_time!='' :
-        ending_time=convert_time(e_time)
+        ending_time=to_millis(e_time)
     cmd = 'adb shell content query --uri content://sms '
     if starting_time :
         conditions.append(f"date >{starting_time}")
@@ -27,6 +27,6 @@ def sms_data(address='',s_time='',e_time='',status='') :
         cmd += f" --where {condition}"
 
     print(cmd)
-    result= tool.run(cmd,shell=True,capture_output=True,text=True)
-    output = converter(result.stdout)
-    return output
+    console= tool.run(cmd,shell=True,capture_output=True,text=True)
+    data = convert_sms(console.stdout)
+    return data
