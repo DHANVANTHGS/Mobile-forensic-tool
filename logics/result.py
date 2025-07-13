@@ -1,4 +1,5 @@
 from Time import convert_time
+from Time import convert_hrs
 
 def convert_sms(s):
     print(s)
@@ -74,6 +75,46 @@ def convert_property(s):
                 elif key == "net.hostname":
                     key = "Network connected"
                 data_entry[key]=value
+        
+    if data_entry:
+        messages.append(data_entry)
+
+    return messages
+
+def convert_ph(s):
+    messages=[]
+    data_entry={}
+    lines=s.strip().split('\n')
+    for line in lines:
+        if line.startswith('Row'):
+            messages.append(data_entry)
+            data_entry={}
+        elif '=' in line:
+            key,value=line.split('=',1)
+            key=key.strip()
+            value=value.strip()
+            if key == "date":
+                value=convert_time(value)
+            if key == "type" :
+                if value == "1":
+                    value = "Incoming call"
+                elif value =="2":
+                    value = "Outgoing call"
+                elif value =="3":
+                    value = "Missed call"
+                elif value =="4":
+                    value = "Voice mail"
+                elif value =="5":
+                    value ="Rejected call"
+                elif value =="6":
+                    value = "Blocked Call"
+                elif value =="7":
+                    value ="Answered externally"
+            if key =="duration" :
+                value = convert_hrs(value)
+            if key=="name" and value == "null":
+                value = "Unknown Contact"
+            data_entry[key]=value
         
     if data_entry:
         messages.append(data_entry)
